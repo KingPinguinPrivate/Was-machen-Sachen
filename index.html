@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Was machen Sachen?</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Linke Spalte -->
+        <div class="left">
+            <h2>Alle Aktivitäten</h2>
+            <div id="activityList"></div>
+        </div>
+
+        <!-- Rechte Spalte -->
+        <div class="right">
+
+            <h1>🎲 Der "Was machen Sachen?"</h1>
+
+            <!-- Neue Aktivität hinzufügen -->
+            <div class="add-form">
+                <div class="input-row">
+                    <select id="newCategory">
+                        <option value="low">$</option>
+                        <option value="medium">$$</option>
+                        <option value="high">$$$</option>
+                    </select>
+                    <input type="text" id="newActivity" placeholder="Aktivität eingeben">
+                </div>
+                <button onclick="addActivity()">➕ Hinzufügen</button>
+                <button onclick="resetActivities()">🗑️ Alle löschen</button>
+            </div>
+
+            <!-- Ergebnis-Bereich -->
+            <div class="result-area">
+
+                <div class="result-row">
+                    <button onclick="drawCategory()">🎯 Budget ziehen</button>
+                    <button onclick="drawActivity()">🎰 Aktivität ziehen</button>
+                </div>
+
+                <div class="result-boxes">
+                    <div id="wheel" class="box">?</div>
+                    <div id="slot" class="box">?</div>
+                </div>
+            </div>
+
+            <!-- Version -->
+            <div class="version">
+                v1.0 – Made by Private | sponsored by NYZ
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

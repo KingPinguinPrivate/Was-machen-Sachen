@@ -1,0 +1,150 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.left {
+    width: 30%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border-right: 2px solid #ddd;
+}
+
+.right {
+    width: 70%;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+h1, h2 {
+    margin-top: 0;
+}
+
+/* Formular */
+.add-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    max-width: 400px;
+    gap: 5px;
+}
+
+.input-row {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+}
+
+.add-form select,
+.add-form input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 36px;
+    flex: 1;
+}
+
+.add-form button {
+    padding: 8px 15px;
+    font-size: 14px;
+    border: none;
+    background-color: #333;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+}
+
+.add-form button:hover {
+    background-color: #555;
+}
+
+/* Ergebnis */
+.result-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.result-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.result-boxes {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Boxen */
+.box {
+    width: 160px;
+    height: 50px;
+    line-height: 50px;
+    border: 2px solid black;
+    border-radius: 8px;
+    font-size: 20px;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+/* Slot Highlight */
+#slot {
+    font-weight: bold;
+}
+
+/* Budget Flash */
+.flash-green {
+    background-color: #a8e6a2;
+}
+.flash-yellow {
+    background-color: #ffeaa7;
+}
+.flash-red {
+    background-color: #ffadad;
+}
+
+/* Version */
+.version {
+    margin-top: 30px;
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left, .right {
+        width: 100%;
+        height: auto;
+    }
+
+    .input-row {
+        flex-direction: column;
+    }
+
+    .result-row {
+        flex-direction: column;
+    }
+
+    .result-boxes {
+        flex-direction: column;
+    }
+}
