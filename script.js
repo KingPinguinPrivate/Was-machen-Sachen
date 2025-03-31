@@ -1,8 +1,7 @@
-// --- Firebase Initialisierung ---
+// Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Lokale Kopie der Aktivitäten
 let activities = {
     low: [],
     medium: [],
@@ -17,13 +16,13 @@ const categoryNames = {
 
 let drawnCategory = null;
 
-// --------- Echtzeit Sync ---------
+// Live Sync
 db.ref("activities").on("value", (snapshot) => {
     activities = snapshot.val() || { low: [], medium: [], high: [] };
     displayActivities();
 });
 
-// --------- Budget ziehen ---------
+// Budget ziehen + Farbflash
 function drawCategory() {
     const wheel = document.getElementById("wheel");
     wheel.style.transform = "rotate(10deg)";
@@ -34,19 +33,17 @@ function drawCategory() {
         else if (random < 90) drawnCategory = "medium";
         else drawnCategory = "high";
 
-        // Farb-Flash
         wheel.style.backgroundColor =
             drawnCategory === "low" ? "lightgreen" :
             drawnCategory === "medium" ? "gold" :
             "lightcoral";
 
         setTimeout(() => wheel.style.backgroundColor = "", 500);
-
         wheel.innerText = `Budget: ${categoryNames[drawnCategory]}`;
     }, 300);
 }
 
-// --------- Slot Ziehen ---------
+// Slot-Animation beim Ziehen
 function drawActivity() {
     const slot = document.getElementById("slot");
 
@@ -60,7 +57,6 @@ function drawActivity() {
         return;
     }
 
-    // Slot Mini-Animation
     let count = 0;
     let interval = setInterval(() => {
         slot.innerText = activities[drawnCategory][Math.floor(Math.random() * activities[drawnCategory].length)] || "🔄";
@@ -71,14 +67,14 @@ function drawActivity() {
             const activity = activities[drawnCategory][randomIndex];
             slot.innerText = activity;
 
-            // Aus der Datenbank löschen
+            // Entfernen
             activities[drawnCategory].splice(randomIndex, 1);
             db.ref("activities").set(activities);
         }
     }, 100);
 }
 
-// --------- Neue Aktivität hinzufügen ---------
+// Neue Aktivität
 function addActivity() {
     const category = document.getElementById("newCategory").value;
     const newActivity = document.getElementById("newActivity").value.trim();
@@ -92,7 +88,7 @@ function addActivity() {
     }
 }
 
-// --------- Einzel-Aktivität löschen (mit Passwort) ---------
+// Einzelne Aktivität löschen (mit Passwort)
 function deleteActivity(category, index) {
     const password = prompt("Zum Löschen bitte Passwort eingeben:");
     if (password === "xd") {
@@ -103,7 +99,7 @@ function deleteActivity(category, index) {
     }
 }
 
-// --------- Anzeige ---------
+// Anzeige
 function displayActivities() {
     const activityDiv = document.getElementById("activityList");
     activityDiv.innerHTML = "";
@@ -132,7 +128,7 @@ function displayActivities() {
     }
 }
 
-// --------- Reset (komplett löschen) ---------
+// Reset
 function resetActivities() {
     if (confirm("Alle Aktivitäten löschen?")) {
         activities = { low: [], medium: [], high: [] };

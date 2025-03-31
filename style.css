@@ -90,7 +90,6 @@ h1, h2 {
     flex-wrap: wrap;
 }
 
-/* Boxen */
 .box {
     width: 160px;
     height: 50px;
@@ -99,30 +98,7 @@ h1, h2 {
     border-radius: 8px;
     font-size: 20px;
     text-align: center;
-    transition: all 0.4s ease;
-}
-
-/* Slot Highlight */
-#slot {
-    font-weight: bold;
-}
-
-/* Budget Flash */
-.flash-green {
-    background-color: #a8e6a2;
-}
-.flash-yellow {
-    background-color: #ffeaa7;
-}
-.flash-red {
-    background-color: #ffadad;
-}
-
-/* Version */
-.version {
-    margin-top: 30px;
-    font-size: 12px;
-    opacity: 0.6;
+    transition: all 0.3s ease;
 }
 
 /* Responsive */
