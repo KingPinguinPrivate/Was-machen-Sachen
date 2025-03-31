@@ -2,63 +2,16 @@
 <html lang="de">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Der "Was machen Sachen?"</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css">
 
-    <!-- Firebase SDKs (für einfache HTML-Nutzung) -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
-</head>
 
-<body>
-    <div class="container">
-
-        <!-- Linke Spalte -->
-        <div class="left">
-            <h2>Alle Aktivitäten</h2>
-            <div id="activityList"></div>
-        </div>
-
-        <!-- Rechte Spalte -->
-        <div class="right">
-            <h1>🎲 Der "Was machen Sachen?"</h1>
-
-            <!-- Neue Aktivität hinzufügen -->
-            <div class="add-form">
-                <div class="input-row">
-                    <select id="newCategory">
-                        <option value="low">$</option>
-                        <option value="medium">$$</option>
-                        <option value="high">$$$</option>
-                    </select>
-                    <input type="text" id="newActivity" placeholder="Aktivität eingeben" />
-                </div>
-                <button onclick="addActivity()">➕ Hinzufügen</button>
-                <button onclick="resetActivities()">🗑️ Alle löschen</button>
-            </div>
-
-            <!-- Ergebnis-Bereich -->
-            <div class="result-area">
-                <div class="result-row">
-                    <button onclick="drawCategory()">🎯 Budget ziehen</button>
-                    <button onclick="drawActivity()">🎰 Aktivität ziehen</button>
-                </div>
-                <div class="result-boxes">
-                    <div id="wheel" class="box">?</div>
-                    <div id="slot" class="box">?</div>
-                </div>
-            </div>
-
-            <!-- Version -->
-            <p style="margin-top: 40px; font-size: 12px; text-align: center; color: #888;">
-                v1.0 – Made by Private | sponsored by NYZ
-            </p>
-        </div>
-    </div>
-
-    <!-- Deine Firebase Config + Initialisierung -->
+    <!-- Firebase Config -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDyksGAlv-LiGJCKl8i3kc9mW2eQ1e3RM8",
@@ -69,14 +22,58 @@
             messagingSenderId: "644326159727",
             appId: "1:644326159727:web:15f29a015e7bdf1498a49a"
         };
-
-        // Firebase starten
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
     </script>
+</head>
 
-    <!-- Dein Script -->
+<body>
+    <div class="container">
+
+        <div class="left">
+            <h2>Alle Aktivitäten</h2>
+            <div id="activityList"></div>
+        </div>
+
+        <div class="right">
+
+            <h1>🎲 Der "Was machen Sachen?"</h1>
+
+            <div class="add-form">
+                <div class="input-row">
+                    <select id="newCategory">
+                        <option value="low">$</option>
+                        <option value="medium">$$</option>
+                        <option value="high">$$$</option>
+                    </select>
+                    <input type="text" id="newActivity" placeholder="Aktivität eingeben">
+                </div>
+                <button onclick="addActivity()">➕ Hinzufügen</button>
+                <button onclick="resetActivities()">🗑️ Alle löschen</button>
+            </div>
+
+            <div class="result-area">
+
+                <div class="result-row">
+                    <button onclick="drawCategory()">🎯 Budget ziehen</button>
+                    <button onclick="drawActivity()">🎰 Aktivität ziehen</button>
+                </div>
+
+                <div class="result-boxes">
+                    <div id="wheel" class="box">?</div>
+                    <div id="slot" class="box">?</div>
+                </div>
+            </div>
+
+            <p style="margin-top:40px; font-size:12px; text-align:center; color:#888;">
+                v1.0 – Made by Private | sponsored by NYZ
+            </p>
+
+        </div>
+    </div>
+
+    <!-- Hier ist das Wichtige -->
     <script src="script.js"></script>
-</body>
 
+</body>
 </html>

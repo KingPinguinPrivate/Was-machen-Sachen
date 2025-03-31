@@ -1,12 +1,6 @@
-// Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// --- script.js ---
 
-let activities = {
-    low: [],
-    medium: [],
-    high: []
-};
+// Firebase bereits in index.html initialisiert
 
 const categoryNames = {
     low: "$",
@@ -16,10 +10,12 @@ const categoryNames = {
 
 let drawnCategory = null;
 
-// Live Sync
-db.ref("activities").on("value", (snapshot) => {
-    activities = snapshot.val() || { low: [], medium: [], high: [] };
-    displayActivities();
+// Auto-Fix: Kategorien immer sicherstellen
+firebase.database().ref("activities").once("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    if (!data.low) firebase.database().ref("activities/low").set([]);
+    if (!data.medium) firebase.database().ref("activities/medium").set([]);
+    if (!data.high) firebase.database().ref("activities/high").set([]);
 });
 
 // Budget ziehen + Farbflash
@@ -43,7 +39,7 @@ function drawCategory() {
     }, 300);
 }
 
-// Slot-Animation beim Ziehen
+// Slot-Animation
 function drawActivity() {
     const slot = document.getElementById("slot");
 
@@ -52,26 +48,28 @@ function drawActivity() {
         return;
     }
 
-    if (activities[drawnCategory].length === 0) {
-        alert("Keine Aktivitäten in dieser Kategorie.");
-        return;
-    }
+    firebase.database().ref("activities/" + drawnCategory).once("value", (snapshot) => {
+        const list = snapshot.val() || [];
 
-    let count = 0;
-    let interval = setInterval(() => {
-        slot.innerText = activities[drawnCategory][Math.floor(Math.random() * activities[drawnCategory].length)] || "🔄";
-        count++;
-        if (count >= 10) {
-            clearInterval(interval);
-            const randomIndex = Math.floor(Math.random() * activities[drawnCategory].length);
-            const activity = activities[drawnCategory][randomIndex];
-            slot.innerText = activity;
-
-            // Entfernen
-            activities[drawnCategory].splice(randomIndex, 1);
-            db.ref("activities").set(activities);
+        if (list.length === 0) {
+            alert("Keine Aktivitäten in dieser Kategorie.");
+            return;
         }
-    }, 100);
+
+        let count = 0;
+        let interval = setInterval(() => {
+            slot.innerText = list[Math.floor(Math.random() * list.length)] || "🔄";
+            count++;
+            if (count >= 10) {
+                clearInterval(interval);
+                const randomIndex = Math.floor(Math.random() * list.length);
+                const activity = list[randomIndex];
+                slot.innerText = activity;
+                list.splice(randomIndex, 1);
+                firebase.database().ref("activities/" + drawnCategory).set(list);
+            }
+        }, 100);
+    });
 }
 
 // Neue Aktivität
@@ -79,24 +77,32 @@ function addActivity() {
     const category = document.getElementById("newCategory").value;
     const newActivity = document.getElementById("newActivity").value.trim();
 
-    if (newActivity) {
-        activities[category].push(newActivity);
-        db.ref("activities").set(activities);
-        document.getElementById("newActivity").value = "";
-    } else {
+    if (!newActivity) {
         alert("Bitte eine Aktivität eingeben.");
+        return;
     }
+
+    firebase.database().ref("activities/" + category).once("value", (snapshot) => {
+        const list = snapshot.val() || [];
+        list.push(newActivity);
+        firebase.database().ref("activities/" + category).set(list);
+        document.getElementById("newActivity").value = "";
+    });
 }
 
-// Einzelne Aktivität löschen (mit Passwort)
+// Einzelne Aktivität löschen
 function deleteActivity(category, index) {
     const password = prompt("Zum Löschen bitte Passwort eingeben:");
-    if (password === "xd") {
-        activities[category].splice(index, 1);
-        db.ref("activities").set(activities);
-    } else if (password !== null) {
-        alert("Falsches Passwort!");
+    if (password !== "xd") {
+        if (password !== null) alert("Falsches Passwort!");
+        return;
     }
+
+    firebase.database().ref("activities/" + category).once("value", (snapshot) => {
+        const list = snapshot.val() || [];
+        list.splice(index, 1);
+        firebase.database().ref("activities/" + category).set(list);
+    });
 }
 
 // Anzeige
@@ -104,35 +110,44 @@ function displayActivities() {
     const activityDiv = document.getElementById("activityList");
     activityDiv.innerHTML = "";
 
-    for (const category in activities) {
+    for (const category in categoryNames) {
         const catTitle = document.createElement("h3");
         catTitle.innerText = `Kategorie ${categoryNames[category]}`;
         activityDiv.appendChild(catTitle);
 
         const ul = document.createElement("ul");
-        activities[category].forEach((activity, index) => {
-            const li = document.createElement("li");
-            li.innerText = activity + " ";
-            li.style.color =
-                category === "low" ? "green" :
-                category === "medium" ? "orange" : "red";
 
-            const deleteBtn = document.createElement("button");
-            deleteBtn.innerText = "🗑️";
-            deleteBtn.style.marginLeft = "5px";
-            deleteBtn.onclick = () => deleteActivity(category, index);
-            li.appendChild(deleteBtn);
-            ul.appendChild(li);
+        firebase.database().ref("activities/" + category).once("value", (snapshot) => {
+            const list = snapshot.val() || [];
+            list.forEach((activity, index) => {
+                const li = document.createElement("li");
+                li.innerText = activity + " ";
+                li.style.color =
+                    category === "low" ? "green" :
+                    category === "medium" ? "orange" : "red";
+
+                const deleteBtn = document.createElement("button");
+                deleteBtn.innerText = "🗑️";
+                deleteBtn.style.marginLeft = "5px";
+                deleteBtn.onclick = () => deleteActivity(category, index);
+                li.appendChild(deleteBtn);
+                ul.appendChild(li);
+            });
+            activityDiv.appendChild(ul);
         });
-        activityDiv.appendChild(ul);
     }
 }
 
 // Reset
 function resetActivities() {
     if (confirm("Alle Aktivitäten löschen?")) {
-        activities = { low: [], medium: [], high: [] };
-        db.ref("activities").set(activities);
+        firebase.database().ref("activities/low").set([]);
+        firebase.database().ref("activities/medium").set([]);
+        firebase.database().ref("activities/high").set([]);
         alert("Alle Aktivitäten wurden gelöscht.");
+        displayActivities();
     }
 }
+
+// Live-Updater
+firebase.database().ref("activities").on("value", displayActivities);
