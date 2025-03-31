@@ -1,16 +1,13 @@
+// --- Firebase Initialisierung ---
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Lokale Kopie der Aktivitäten
 let activities = {
     low: [],
     medium: [],
     high: []
 };
-
-if (localStorage.getItem("activities")) {
-    activities = JSON.parse(localStorage.getItem("activities"));
-}
-
-function saveActivities() {
-    localStorage.setItem("activities", JSON.stringify(activities));
-}
 
 const categoryNames = {
     low: "$",
@@ -20,31 +17,36 @@ const categoryNames = {
 
 let drawnCategory = null;
 
-// -------- Budget ziehen + Highlight --------
+// --------- Echtzeit Sync ---------
+db.ref("activities").on("value", (snapshot) => {
+    activities = snapshot.val() || { low: [], medium: [], high: [] };
+    displayActivities();
+});
+
+// --------- Budget ziehen ---------
 function drawCategory() {
     const wheel = document.getElementById("wheel");
-    wheel.classList.remove("flash-green", "flash-yellow", "flash-red");
-
+    wheel.style.transform = "rotate(10deg)";
     setTimeout(() => {
+        wheel.style.transform = "rotate(0deg)";
         const random = Math.random() * 100;
         if (random < 60) drawnCategory = "low";
         else if (random < 90) drawnCategory = "medium";
         else drawnCategory = "high";
 
+        // Farb-Flash
+        wheel.style.backgroundColor =
+            drawnCategory === "low" ? "lightgreen" :
+            drawnCategory === "medium" ? "gold" :
+            "lightcoral";
+
+        setTimeout(() => wheel.style.backgroundColor = "", 500);
+
         wheel.innerText = `Budget: ${categoryNames[drawnCategory]}`;
-
-        // Farbiges Blitzen
-        if (drawnCategory === "low") wheel.classList.add("flash-green");
-        if (drawnCategory === "medium") wheel.classList.add("flash-yellow");
-        if (drawnCategory === "high") wheel.classList.add("flash-red");
-
-        setTimeout(() => {
-            wheel.classList.remove("flash-green", "flash-yellow", "flash-red");
-        }, 500);
     }, 300);
 }
 
-// -------- Slot-Animation --------
+// --------- Slot Ziehen ---------
 function drawActivity() {
     const slot = document.getElementById("slot");
 
@@ -58,7 +60,7 @@ function drawActivity() {
         return;
     }
 
-    // Mini Slot-Scrolling
+    // Slot Mini-Animation
     let count = 0;
     let interval = setInterval(() => {
         slot.innerText = activities[drawnCategory][Math.floor(Math.random() * activities[drawnCategory].length)] || "🔄";
@@ -68,41 +70,40 @@ function drawActivity() {
             const randomIndex = Math.floor(Math.random() * activities[drawnCategory].length);
             const activity = activities[drawnCategory][randomIndex];
             slot.innerText = activity;
+
+            // Aus der Datenbank löschen
             activities[drawnCategory].splice(randomIndex, 1);
-            saveActivities();
-            displayActivities();
+            db.ref("activities").set(activities);
         }
     }, 100);
 }
 
-// -------- Aktivität hinzufügen --------
+// --------- Neue Aktivität hinzufügen ---------
 function addActivity() {
     const category = document.getElementById("newCategory").value;
     const newActivity = document.getElementById("newActivity").value.trim();
 
     if (newActivity) {
         activities[category].push(newActivity);
-        saveActivities();
-        displayActivities();
+        db.ref("activities").set(activities);
         document.getElementById("newActivity").value = "";
     } else {
         alert("Bitte eine Aktivität eingeben.");
     }
 }
 
-// -------- Einzel-Aktivität löschen (mit Passwort) --------
+// --------- Einzel-Aktivität löschen (mit Passwort) ---------
 function deleteActivity(category, index) {
     const password = prompt("Zum Löschen bitte Passwort eingeben:");
     if (password === "xd") {
         activities[category].splice(index, 1);
-        saveActivities();
-        displayActivities();
+        db.ref("activities").set(activities);
     } else if (password !== null) {
         alert("Falsches Passwort!");
     }
 }
 
-// -------- Anzeige --------
+// --------- Anzeige ---------
 function displayActivities() {
     const activityDiv = document.getElementById("activityList");
     activityDiv.innerHTML = "";
@@ -131,14 +132,11 @@ function displayActivities() {
     }
 }
 
-// -------- Reset --------
+// --------- Reset (komplett löschen) ---------
 function resetActivities() {
     if (confirm("Alle Aktivitäten löschen?")) {
         activities = { low: [], medium: [], high: [] };
-        saveActivities();
-        displayActivities();
+        db.ref("activities").set(activities);
         alert("Alle Aktivitäten wurden gelöscht.");
     }
 }
-
-displayActivities();
