@@ -9,8 +9,8 @@ body {
 
 .container {
     display: flex;
-    height: 100vh;
-    overflow: hidden;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .left, .right {
@@ -19,14 +19,11 @@ body {
 }
 
 .left {
-    width: 30%;
     background-color: #fff;
-    overflow-y: auto;
     border-right: 1px solid #ccc;
 }
 
 .right {
-    width: 70%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -109,18 +106,20 @@ h1, h2 {
 
 @media (max-width: 768px) {
     .container {
+        display: flex;
         flex-direction: column;
         height: auto;
     }
 
     .left {
+        order: 2;
         width: 100%;
-        height: auto;
         border-right: none;
-        border-bottom: 1px solid #ccc;
+        border-top: 1px solid #ccc;
     }
 
     .right {
+        order: 1;
         width: 100%;
         height: auto;
     }
@@ -151,6 +150,11 @@ h1, h2 {
 
     h1 {
         text-align: center;
+    }
+
+    .left {
+        max-height: none;
+        overflow: visible;
     }
 }
 
