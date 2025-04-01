@@ -25,9 +25,10 @@ function drawCategory() {
     setTimeout(() => {
         wheel.style.transform = "rotate(0deg)";
         const random = Math.random() * 100;
-        if (random < 60) drawnCategory = "low";
-        else if (random < 90) drawnCategory = "medium";
-        else drawnCategory = "high";
+        if (random < 70) drawnCategory = "low";        // 70% Chance
+        else if (random < 95) drawnCategory = "medium"; // 25% Chance
+        else drawnCategory = "high";                    //  5% Chance
+
 
         wheel.style.backgroundColor =
             drawnCategory === "low" ? "lightgreen" :
